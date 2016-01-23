@@ -273,17 +273,17 @@ do {
 #get all english files in patch direcotry
 echo $subversion
 installers=$(wget -qO- `echo $subversion`en_US/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "AdbeRdr.*msi" | sed '$alast line')
-patches=$(wget -qO- `echo $subversion`misc/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "^.*msp" | grep -v "_" | sed "s/^.*\///g" | sed '$alast line')
+patches=$(wget -qO- `echo $subversion`misc/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "^.*msp" | grep -v "_" | sed '$alast line')
 
-echo "$installers"
-echo "$patches"
+#echo "$installers"
+#echo "$patches"
 
-#detect if it has installer
+#detect if it is msi installer
 printf %s "$installers" | while IFS= read -r msi
 do {
 
 echo $msi | grep "AdbeRdr.*msi"
-if [ $? -ne 0 ]
+if [ $? -eq 0 ]
 then
 filename=$(echo $msi | sed "s/^.*\///g")
 
