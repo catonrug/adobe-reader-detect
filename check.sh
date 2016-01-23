@@ -272,7 +272,7 @@ do {
 
 #get all english files in patch direcotry
 echo $subversion
-installers=$(wget -qO- `echo $subversion`en_US/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "AdbeRdr.*msi" | sed '$alast line')
+installers=$(wget -qO- `echo $subversion`en_US/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "AdbeRdr.*msi" | sed "s/ftp:\/\/ftp\.adobe\.com:21/http:\/\/ardownload\.adobe\.com/g" | sed '$alast line')
 
 
 #echo "$installers"
@@ -327,7 +327,7 @@ fi
 fi
 } done
 
-patches=$(wget -qO- `echo $subversion`misc/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "^.*msp" | grep -v "_" | sed '$alast line')
+patches=$(wget -qO- `echo $subversion`misc/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "^.*msp" | grep -v "_" | sed "s/ftp:\/\/ftp\.adobe\.com:21/http:\/\/ardownload\.adobe\.com/g" | sed '$alast line')
 
 printf %s "$patches" | while IFS= read -r msp
 do {
@@ -342,7 +342,7 @@ grep "$msp" $db > /dev/null
 if [ $? -ne 0 ]
 #if sha1 sum do not exist in database then this is new version
 then
-echo new installer detected!
+echo new patch file detected!
 echo
 
 filename=$(echo $msp | sed "s/^.*\///g")
