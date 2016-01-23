@@ -273,7 +273,7 @@ do {
 #get all english files in patch direcotry
 echo $subversion
 installers=$(wget -qO- `echo $subversion`en_US/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "AdbeRdr.*msi" | sed '$alast line')
-patches=$(wget -qO- `echo $subversion`misc/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "^.*msp" | grep -v "_" | sed '$alast line')
+
 
 #echo "$installers"
 #echo "$patches"
@@ -316,7 +316,7 @@ echo "$sha1">> $db
 emails=$(cat ../posting | sed '$aend of file')
 printf %s "$emails" | while IFS= read -r onemail
 do {
-python ../send-email.py "$onemail" "$filename" "$msi
+python ../send-email.py "$onemail" "$filename" "$msi 
 $md5
 $sha1"
 } done
@@ -325,6 +325,54 @@ fi
 
 fi
 
+
+patches=$(wget -qO- `echo $subversion`misc/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "^.*msp" | grep -v "_" | sed '$alast line')
+
+printf %s "$patches" | while IFS= read -r msp
+do {
+
+echo $msp | grep "^.*msp"
+if [ $? -eq 0 ]
+then
+filename=$(echo $msp | sed "s/^.*\///g")
+
+echo Downloading $msp
+wget $msp -O $tmp/$filename -q
+echo
+
+#check if this installer file is already in database
+grep "$msp" $db > /dev/null
+if [ $? -ne 0 ]
+#if sha1 sum do not exist in database then this is new version
+then
+echo new installer detected!
+echo
+
+echo creating sha1 checksum of file..
+sha1=$(sha1sum $tmp/$filename | sed "s/\s.*//g")
+echo
+
+echo creating md5 checksum of file..
+md5=$(md5sum $tmp/$filename | sed "s/\s.*//g")
+echo
+
+#lets put all signs about this file into the database
+echo "$msp">> $db
+echo "$md5">> $db
+echo "$sha1">> $db
+
+#lets send emails to all people in "posting" file
+emails=$(cat ../posting | sed '$aend of file')
+printf %s "$emails" | while IFS= read -r onemail
+do {
+python ../send-email.py "$onemail" "$filename" "$msp 
+$md5
+$sha1"
+} done
+echo
+fi
+
+fi
 
 } done
 } done
