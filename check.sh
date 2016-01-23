@@ -285,11 +285,7 @@ do {
 echo $msi | grep "AdbeRdr.*msi"
 if [ $? -eq 0 ]
 then
-filename=$(echo $msi | sed "s/^.*\///g")
 
-echo Downloading $msi
-wget $msi -O $tmp/$filename -q
-echo
 
 #check if this installer file is already in database
 grep "$msi" $db > /dev/null
@@ -297,6 +293,11 @@ if [ $? -ne 0 ]
 #if sha1 sum do not exist in database then this is new version
 then
 echo new installer detected!
+echo
+
+filename=$(echo $msi | sed "s/^.*\///g")
+echo Downloading $msi
+wget $msi -O $tmp/$filename -q
 echo
 
 echo creating sha1 checksum of file..
@@ -334,11 +335,7 @@ do {
 echo $msp | grep "^.*msp"
 if [ $? -eq 0 ]
 then
-filename=$(echo $msp | sed "s/^.*\///g")
 
-echo Downloading $msp
-wget $msp -O $tmp/$filename -q
-echo
 
 #check if this installer file is already in database
 grep "$msp" $db > /dev/null
@@ -346,6 +343,11 @@ if [ $? -ne 0 ]
 #if sha1 sum do not exist in database then this is new version
 then
 echo new installer detected!
+echo
+
+filename=$(echo $msp | sed "s/^.*\///g")
+echo Downloading $msp
+wget $msp -O $tmp/$filename -q
 echo
 
 echo creating sha1 checksum of file..
