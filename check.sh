@@ -324,7 +324,7 @@ echo
 fi
 
 fi
-
+} done
 
 patches=$(wget -qO- `echo $subversion`misc/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "^.*msp" | grep -v "_" | sed '$alast line')
 
@@ -375,6 +375,7 @@ fi
 fi
 
 } done
+
 } done
 } done
 
