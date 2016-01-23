@@ -264,38 +264,39 @@ printf %s "$versions2check" | while IFS= read -r oneversion
 do {
 
 #retrieve all patch links for version
-patches=$(wget -qO- ftp://ftp.adobe.com/pub/adobe/reader/win/$oneversion/ | sed "s/\d034/\n/g" | grep "^ftp" | sed '$alast line')
+subversions2check=$(wget -qO- ftp://ftp.adobe.com/pub/adobe/reader/win/$oneversion/ | sed "s/\d034/\n/g" | grep "^ftp" | sed '$alast line')
 
 #we will take each version and detect if it has installer or patch file inside
-printf %s "$patches" | while IFS= read -r patch
+printf %s "$subversions2check" | while IFS= read -r subversion
 do {
 
 #get all english files in patch direcotry
-echo $patch
-files=$(wget -qO- `echo $patch`en_US/ | sed "s/\d034/\n/g" | grep "^ftp")
+echo $subversion
+installers=$(wget -qO- `echo $subversion`en_US/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "AdbeRdr.*msi" | sed '$alast line')
+patches=$(wget -qO- `echo $subversion`misc/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "^.*msp" | grep -v "_" | sed "s/^.*\///g" | sed '$alast line')
 
-echo "$files"
+echo "$installers"
+echo "$patches"
 
 #detect if it has installer
-printf %s "$files" | while IFS= read -r file
+printf %s "$installers" | while IFS= read -r msi
 do {
 
-echo $file | grep "AdbeRdr.*msi"
+echo $msi | grep "AdbeRdr.*msi"
 if [ $? -ne 0 ]
 then
-url=$(echo $file | grep "AdbeRdr.*msi")
-filename=$(echo $url | sed "s/^.*\///g")
+filename=$(echo $msi | sed "s/^.*\///g")
 
-echo Downloading $url
-wget $url -O $tmp/$filename -q
+echo Downloading $msi
+wget $msi -O $tmp/$filename -q
 echo
 
 #check if this installer file is already in database
-grep "$url" $db > /dev/null
+grep "$msi" $db > /dev/null
 if [ $? -ne 0 ]
 #if sha1 sum do not exist in database then this is new version
 then
-echo new file detected!
+echo new installer detected!
 echo
 
 echo creating sha1 checksum of file..
@@ -307,7 +308,7 @@ md5=$(md5sum $tmp/$filename | sed "s/\s.*//g")
 echo
 
 #lets put all signs about this file into the database
-echo "$url">> $db
+echo "$msi">> $db
 echo "$md5">> $db
 echo "$sha1">> $db
 
@@ -315,7 +316,7 @@ echo "$sha1">> $db
 emails=$(cat ../posting | sed '$aend of file')
 printf %s "$emails" | while IFS= read -r onemail
 do {
-python ../send-email.py "$onemail" "$filename" "$url
+python ../send-email.py "$onemail" "$filename" "$msi
 $md5
 $sha1"
 } done
@@ -323,7 +324,7 @@ echo
 fi
 
 fi
-#
+
 
 } done
 } done
