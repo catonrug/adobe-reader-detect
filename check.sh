@@ -253,6 +253,7 @@ fi
 
 
 versions2check=$(cat <<EOF
+AcrobatDC
 11.x
 10.x
 extra line
@@ -272,13 +273,11 @@ do {
 
 #get all english files in patch direcotry
 echo $subversion
-installers=$(wget -qO- `echo $subversion`en_US/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "AdbeRdr.*msi" | sed "s/ftp:\/\/ftp\.adobe\.com:21/http:\/\/ardownload\.adobe\.com/g" | sed '$alast line')
 
-
-#echo "$installers"
-#echo "$patches"
 
 #detect if it is msi installer
+installers=$(wget -qO- `echo $subversion`en_US/ | sed "s/\d034/\n/g" | grep "^ftp" | grep "AdbeRdr.*msi" | sed "s/ftp:\/\/ftp\.adobe\.com:21/http:\/\/ardownload\.adobe\.com/g" | sed '$alast line')
+
 printf %s "$installers" | while IFS= read -r msi
 do {
 
