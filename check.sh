@@ -277,6 +277,9 @@ files=$(wget -qO- $patch/en_US/ | sed "s/\d034/\n/g" | grep "^ftp")
 printf %s "$files" | while IFS= read -r file
 do {
 
+echo $file | grep "AdbeRdr.*msi"
+if [ $? -ne 0 ]
+then
 url=$(echo $file | grep "AdbeRdr.*msi")
 filename=$(echo $url | sed "s/^.*\///g")
 
@@ -315,6 +318,9 @@ $sha1"
 } done
 echo
 fi
+
+fi
+
 
 } done
 } done
