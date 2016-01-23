@@ -271,7 +271,10 @@ printf %s "$patches" | while IFS= read -r patch
 do {
 
 #get all english files in patch direcotry
-files=$(wget -qO- $patch/en_US/ | sed "s/\d034/\n/g" | grep "^ftp")
+echo $patch
+files=$(wget -qO- `echo $patch`en_US/ | sed "s/\d034/\n/g" | grep "^ftp")
+
+echo "$files"
 
 #detect if it has installer
 printf %s "$files" | while IFS= read -r file
