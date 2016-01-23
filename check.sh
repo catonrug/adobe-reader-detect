@@ -253,7 +253,6 @@ fi
 
 
 versions2check=$(cat <<EOF
-AcrobatDC
 11.x
 10.x
 extra line
